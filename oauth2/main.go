@@ -464,42 +464,44 @@ func registerClientHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func authorizeHandler(w http.ResponseWriter, r *http.Request) {
-	// Ambil parameter dari query string
-	clientID := r.URL.Query().Get("client_id")
-	responseType := r.URL.Query().Get("response_type")
-	redirectURI := r.URL.Query().Get("redirect_uri")
-	scope := r.URL.Query().Get("scope") // Bisa comma-separated
-	state := r.URL.Query().Get("state") // Opsional tapi direkomendasikan
-
-	if clientID == "" || responseType == "" || redirectURI == "" {
-		http.Error(w, "Parameter client_id, response_type, dan redirect_uri diperlukan", http.StatusBadRequest)
-		return
-	}
-	if responseType != "code" {
-		http.Error(w, "response_type harus 'code'", http.StatusBadRequest)
-		return
-	}
-
-	client, err := getOAuthClient(clientID)
-	if err != nil {
-		http.Error(w, "client_id tidak valid", http.StatusBadRequest)
-		return
-	}
-
-	validRedirectURI := false
-	for _, uri := range client.RedirectURIs {
-		if uri == redirectURI {
-			validRedirectURI = true
-			break
-		}
-	}
-	if !validRedirectURI {
-		http.Error(w, "redirect_uri tidak valid untuk klien ini", http.StatusBadRequest)
-		return
-	}
 
 	// Jika metode GET, tampilkan halaman login/persetujuan
 	if r.Method == http.MethodGet {
+
+		// Ambil parameter dari query string
+		clientID := r.URL.Query().Get("client_id")
+		responseType := r.URL.Query().Get("response_type")
+		redirectURI := r.URL.Query().Get("redirect_uri")
+		scope := r.URL.Query().Get("scope") // Bisa comma-separated
+		state := r.URL.Query().Get("state") // Opsional tapi direkomendasikan
+
+		if clientID == "" || responseType == "" || redirectURI == "" {
+			http.Error(w, "Parameter client_id, response_type, dan redirect_uri diperlukan", http.StatusBadRequest)
+			return
+		}
+		if responseType != "code" {
+			http.Error(w, "response_type harus 'code'", http.StatusBadRequest)
+			return
+		}
+
+		client, err := getOAuthClient(clientID)
+		if err != nil {
+			http.Error(w, "client_id tidak valid", http.StatusBadRequest)
+			return
+		}
+
+		validRedirectURI := false
+		for _, uri := range client.RedirectURIs {
+			if uri == redirectURI {
+				validRedirectURI = true
+				break
+			}
+		}
+		if !validRedirectURI {
+			http.Error(w, "redirect_uri tidak valid untuk klien ini", http.StatusBadRequest)
+			return
+		}
+
 		// Di aplikasi nyata, Anda akan memeriksa sesi pengguna. Jika sudah login, langsung ke persetujuan.
 		// Untuk contoh ini, kita selalu tampilkan form login yang akan POST ke endpoint ini lagi.
 		data := map[string]string{
@@ -592,6 +594,7 @@ func tokenHandler(w http.ResponseWriter, r *http.Request) {
 		redirectURI := r.PostFormValue("redirect_uri") // Harus sama dengan yang digunakan saat meminta code
 
 		authCode, err := getAuthCode(code)
+		log.Printf("AuthCode: ", authCode, "\n")
 		if err != nil || authCode.Used || time.Now().After(authCode.ExpiresAt) || authCode.ClientID != clientID || authCode.RedirectURI != redirectURI {
 			http.Error(w, "Authorization code tidak valid, kedaluwarsa, atau sudah digunakan", http.StatusBadRequest)
 			return
