@@ -43,6 +43,9 @@ http://localhost:8080/oauth/authorize?response_type=code&client_id=YOUR_CLIENT_I
 -   `state`: String acak untuk proteksi CSRF (opsional tapi direkomendasikan).
 
 ### b. Pengguna Login dan Memberikan Persetujuan
+
+<img width="538" alt="Screenshot 2025-05-27 at 11 37 40" src="https://github.com/user-attachments/assets/a1002951-8f85-4bf8-8b13-8c75da612710" />
+
 Anda akan melihat halaman login sederhana. Masukkan email dan password pengguna yang telah Anda daftarkan (misalnya, `user@example.com` dan `password123`).
 
 Setelah login, server (dalam contoh ini) akan otomatis menganggap persetujuan diberikan dan mengarahkan kembali ke `redirect_uri` klien dengan `code` dan `state` di query string:
