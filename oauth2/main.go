@@ -27,7 +27,7 @@ import (
 // --- Konfigurasi ---
 const (
 	dbUser     = "root"
-	dbPassword = "root" // GANTI DENGAN PASSWORD MYSQL ANDA
+	dbPassword = "" // GANTI DENGAN PASSWORD MYSQL ANDA
 	dbHost     = "localhost"
 	dbPort     = "3306"
 	dbName     = "auth-example" // GANTI JIKA NAMA DB BERBEDA
